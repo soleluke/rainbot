@@ -22,7 +22,6 @@ class Bot():
         self._listen_thread = Thread(target = self._listen)
         self._listening = True
         self._listen_thread.start()
-        print('Listening\nSending User info')
         self._send('USER '+nick+' 0* :'+nick)
         self._send('NICK '+nick)
     def __del__(self):
@@ -49,6 +48,7 @@ class Bot():
             except:
                 self._listening == False
     def _send(self,m):
+        print(m.encode()+b'\r\n')
         self._sock.send(m.encode()+b'\r\n')
 class Queue():
     def __init__(self):
