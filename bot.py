@@ -1,27 +1,25 @@
 import socket
+import json
 from threading import Thread
 from time import sleep
 from irchandler import IRCHandler
 class Bot():
-    def __init__(self,addr,port,nick,channels):
+    def __init__(self,filename):
+        print('loading configuration from ' + filename)
+        with open(filename) as file:
+            data=json.load(file)
         self._sock = socket.socket()
-        self._sock.connect((addr,port))
+        self._sock.connect((data['addr'],int(data['port'])))
         self._q = Queue()
-        #TODO: JSON IMPORT FOR CONINFO
-        self._coninfo = {
-            'addr':addr,
-            'port':port,
-            'nick':nick,
-            'channels':channels,
-            'sock':self._sock,
-        }
+        self._coninfo = data
+        self._coninfo['sock'] = self._sock
         self._handler = IRCHandler(self._coninfo)
         self._handler._send = self._send
         self._listen_thread = Thread(target = self._listen)
         self._listening = True
         self._listen_thread.start()
-        self._send('USER '+nick+' 0 * : '+nick)
-        self._send('NICK '+nick)
+        self._send('USER '+data['nick']+' 0 * : '+data['nick'])
+        self._send('NICK '+data['nick'])
     def __del__(self):
         print('SIGTERM')
     def start(self):
