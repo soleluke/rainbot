@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from bot import Bot
 import sys
+import random
 try:
     addr = sys.argv[1]
     nick = sys.argv[2]
@@ -13,6 +14,6 @@ except:
     port = 6667
 nick = sys.argv[2]
 channels = sys.argv[3:]
-print(nick+' '+str(channels))
 bot = Bot(addr,port,nick,channels)
+random.seed()
 bot.start()

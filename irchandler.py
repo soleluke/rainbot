@@ -22,17 +22,15 @@ class IRCHandler():
 #       password:   password for nickserv identification NOTE: this recuired that the nick already be registered on the server manually
 #       autojoin:   'true' or 'false'. if it is true, then the bot will automatically join any channel it is invited to. Defaults to false if not set
 #       
-        self.coninfo = coninfo
+        self._coninfo = coninfo
         if 'autojoin' not in coninfo.keys():
-            coninfo['autojoin'] = 'true'
+            self._coninfo['autojoin'] = 'true'
         self._sock = coninfo['sock']
-        print('IRC Handler initialized')
     def _send(self):
         pass
     def say(self,c,m): #send a message (m) to the given channel (c)
         self._send('PRIVMSG '+c+' :'+m)
     def handle(self,buf): #handle any given message from the IRC server
-        print(buf)
         if buf[0] == 'PING':
             self._on_ping(buf)
         if buf[1] == '001':
@@ -43,12 +41,12 @@ class IRCHandler():
         if buf[1] == 'INVITE':
             self._on_invite(buf)
     def _on_ping(self,buf):
-        self._send('PONG ' + buf(buf.index('PING'+1)))
+        self._send('PONG ' + buf[buf.index('PING')+1])
     def _on_welcome(self,buf):
         print('Connection Established, joining channels')
-        if 'password' in coninfo.keys(): #nickserv identification if password exists
-            self._send('PRIVMSG nickserv : identify '+ coninfo['password'])
-        for channel in self._coninfp['channels']:
+        if 'password' in self._coninfo.keys(): #nickserv identification if password exists
+            self._send('PRIVMSG nickserv : identify '+ self._coninfo['password'])
+        for channel in self._coninfo['channels']:
             self._send('JOIN '+channel)
         # TODO: implement auto-inviting via chanserv if channel access is restricted or maybe just knocking
     def _on_invite(self,buf):

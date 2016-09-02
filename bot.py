@@ -4,11 +4,9 @@ from time import sleep
 from irchandler import IRCHandler
 class Bot():
     def __init__(self,addr,port,nick,channels):
-        print('Initializing bot '+nick+' connecting to '+addr+':'+str(port)+' channels:'+str(channels))
         self._sock = socket.socket()
         self._sock.connect((addr,port))
-        print('Socket connected to '+ addr +':'+str(port))
-        self._q=Queue()
+        self._q = Queue()
         #TODO: JSON IMPORT FOR CONINFO
         self._coninfo = {
             'addr':addr,
@@ -22,7 +20,7 @@ class Bot():
         self._listen_thread = Thread(target = self._listen)
         self._listening = True
         self._listen_thread.start()
-        self._send('USER '+nick+' 0* :'+nick)
+        self._send('USER '+nick+' 0 * : '+nick)
         self._send('NICK '+nick)
     def __del__(self):
         print('SIGTERM')
@@ -30,7 +28,6 @@ class Bot():
         while 1:
             try:
                 m = self._q.dequeue()
-                print(m)
                 self._handler.handle(m)
             except IndexError:
                 sleep(1)
@@ -39,16 +36,14 @@ class Bot():
                 self._listening == False
                 self._listen_thread.join()
     def _listen(self):
-        while self._listening ==True:
+        while self._listening == True:
             try:
-                buf = self_.sock.recv(4096).decode()
-                print(buf)
+                buf = self._sock.recv(4096).decode()
                 for b in buf.split('\r\n'):
-                    self.q.enqueue(b.split())
+                    self._q.enqueue(b.split())
             except:
                 self._listening == False
     def _send(self,m):
-        print(m.encode()+b'\r\n')
         self._sock.send(m.encode()+b'\r\n')
 class Queue():
     def __init__(self):
